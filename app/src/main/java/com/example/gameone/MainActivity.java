@@ -17,15 +17,11 @@ import android.widget.Button;
 import androidx.annotation.NonNull;
 
 public class MainActivity extends Activity {
-    Point p = new Point();
-    Display w;
+    Display window;
+    Point win = new Point();
     AquaBlue a,b;
     Corona corona;
-    final int press = 0;
-    final int measure = 2;
-    long downTime = 0;//Button被按下时的时间
-    long thisTime = 0;//while每次循环时的时间
-    boolean onBtnTouch = false;//Button是否被按下
+    float mR = (float) 0.8;
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -37,29 +33,21 @@ public class MainActivity extends Activity {
 
         b =findViewById(R.id.aquaBlue2);
         b.setXY(50,50);
-        w  = getWindowManager().getDefaultDisplay();
-        w.getSize(p);
+        window = getWindowManager().getDefaultDisplay();
+        window.getSize(win);
         corona = findViewById(R.id.corona1);
         corona.setOnMyCoronaMoveListener(new Corona.OnMyCoronaMoveListener() {
             @Override
             public void onTouched(float angle) {
-                System.out.println("chufalejiant");
                 a = findViewById(R.id.aquaBlue);
-                a.x = (float) (a.x + 5*Math.cos(angle));
-                a.y = (float) (a.y + 5*Math.sin(angle));
+                if((a.x + 5*Math.cos(angle))<win.x && (a.x + mR*Math.cos(angle))>0){
+                    a.x = (float) (a.x + mR*Math.cos(angle));
+                }
+                if((a.y + 5*Math.sin(angle))<win.y && (a.y + mR*Math.sin(angle))>0){
+                    a.y = (float) (a.y + mR*Math.sin(angle));
+                }
                 a.invalidate();
             }
         });
     }
-
-    private Handler mhandler = new Handler(new Handler.Callback() {
-        @Override
-        public boolean handleMessage(@NonNull Message message) {
-           switch (message.what) {
-               case press:
-                   break;
-            }
-            return false;
-        }
-    });
 }

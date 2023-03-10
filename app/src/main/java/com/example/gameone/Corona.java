@@ -14,7 +14,10 @@ public class Corona extends View implements View.OnTouchListener {
     public float angle = 0;
     int centerX;//方向盘X轴中心
     int centerY;//方向盘Y轴中心
+    float positionX;
+    float positionY;
     OnMyCoronaMoveListener myCoronaMoveListener;
+    Thread t;
 
     public Corona(Context context){
         super(context);
@@ -78,19 +81,41 @@ public class Corona extends View implements View.OnTouchListener {
 
     @Override
     public boolean onTouchEvent(MotionEvent event){
-        isTouch = true;
-        angle = (float) Math.atan2((event.getY()-this.centerY),(event.getX()-this.centerX));
-        if(this.myCoronaMoveListener!=null){
-            this.myCoronaMoveListener.onTouched(this.angle);
+        if(isTouch) t.interrupt();
+        if(event.getAction() == MotionEvent.ACTION_DOWN){
+            positionX = event.getX();
+            positionY = event.getY();
+            isTouch = true;
         }
-        invalidate();
-        if(event.getAction() == 1){
+        if(event.getAction() == MotionEvent.ACTION_UP){
             isTouch = false;
-            if(this.myCoronaMoveListener!=null){
-                this.myCoronaMoveListener.onTouched(this.angle);
-            }
+            invalidate();
         }
-        invalidate();
+        if(event.getAction() == MotionEvent.ACTION_MOVE){
+            positionX = event.getX();
+            positionY = event.getY();
+            isTouch = true;
+        }
+        t = new Thread() {
+            @Override
+            public void run() {
+                while (isTouch) {
+                    try{
+                        angle = (float) Math.atan2((positionY-centerY),
+                                (positionX-centerX));
+                        if(myCoronaMoveListener!=null){
+                            myCoronaMoveListener.onTouched(angle);
+                        }
+                        invalidate();
+                        Thread.sleep(1);
+                    }catch (InterruptedException e){
+                        e.printStackTrace();
+                        break;
+                    }
+                }
+            }
+        };
+        t.start();
         return true;
     }
 

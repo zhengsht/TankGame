@@ -42,6 +42,6 @@ public class AquaBlue extends View {
         canvas.save();//保存中心位置
         canvas.translate(5, 5);
         canvas.save();//保存阴影偏移位置
-        canvas.drawArc(myrect, 0, 360, false, mPaint);//画表盘圆周阴影
+        canvas.drawRect(myrect, mPaint);//画表盘圆周阴影
     }
 }
