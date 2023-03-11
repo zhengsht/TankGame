@@ -7,19 +7,35 @@
     tools:context=".MainActivity"
     android:background="@color/yello">
 
+    <com.example.gameone.Corona
+        android:id="@+id/corona1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <com.example.gameone.AquaBlue
         android:id="@+id/aquaBlue"
+        android:background="@color/white"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
+        android:layout_height="400dp"
+        app:layout_constraintBottom_toTopOf="@+id/corona2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/corona1" />
 
     <com.example.gameone.AquaBlue
         android:id="@+id/aquaBlue2"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="400dp"
+        app:layout_constraintBottom_toTopOf="@+id/corona2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/corona1" />
 
     <com.example.gameone.Corona
-        android:id="@+id/corona1"
+        android:id="@+id/corona2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"

@@ -10,7 +10,7 @@ import android.view.View;
 
 public class Corona extends View implements View.OnTouchListener {
     private Paint mPaint;
-    private boolean isTouch = false;
+    public boolean isTouch = false;
     public float angle = 0;
     int centerX;//方向盘X轴中心
     int centerY;//方向盘Y轴中心
@@ -69,9 +69,9 @@ public class Corona extends View implements View.OnTouchListener {
         }else{
             height=width;
         }
-        setMeasuredDimension((int) (width*0.8), (int) (height*0.8));
-        this.centerX = (int) (width*0.4);
-        this.centerY = (int) (height*0.4);
+        setMeasuredDimension((int) (width*0.5), (int) (height*0.5));
+        this.centerX = (int) (width*0.25);
+        this.centerY = (int) (height*0.25);
     }
 
     @Override
@@ -121,6 +121,10 @@ public class Corona extends View implements View.OnTouchListener {
 
     public void setOnMyCoronaMoveListener(OnMyCoronaMoveListener listener){
         this.myCoronaMoveListener=listener;
+    }
+
+    public void removeOnMyCoronaMoveListener(OnMyCoronaMoveListener listener) {
+        removeOnMyCoronaMoveListener(listener);
     }
 
     public static abstract interface OnMyCoronaMoveListener {
