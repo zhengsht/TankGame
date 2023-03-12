@@ -11,6 +11,8 @@ import android.view.View;
 public class Corona extends View implements View.OnTouchListener {
     private Paint mPaint;
     public boolean isTouch = false;
+
+    public boolean isLeft = true;
     public float angle = 0;
     int centerX;//方向盘X轴中心
     int centerY;//方向盘Y轴中心
@@ -81,41 +83,50 @@ public class Corona extends View implements View.OnTouchListener {
 
     @Override
     public boolean onTouchEvent(MotionEvent event){
-        if(isTouch) t.interrupt();
         if(event.getAction() == MotionEvent.ACTION_DOWN){
+            System.out.println("222222222222222222");
             positionX = event.getX();
             positionY = event.getY();
             isTouch = true;
         }
         if(event.getAction() == MotionEvent.ACTION_UP){
+            System.out.println("66666666666666");
             isTouch = false;
             invalidate();
         }
         if(event.getAction() == MotionEvent.ACTION_MOVE){
+            System.out.println("333333333333333333");
             positionX = event.getX();
             positionY = event.getY();
             isTouch = true;
         }
-        t = new Thread() {
-            @Override
-            public void run() {
-                while (isTouch) {
-                    try{
-                        angle = (float) Math.atan2((positionY-centerY),
-                                (positionX-centerX));
-                        if(myCoronaMoveListener!=null){
-                            myCoronaMoveListener.onTouched(angle);
+        if(isLeft){
+            isLeft = false;
+            t = new Thread() {
+                @Override
+                public void run() {
+                    System.out.println("777777777777");
+                    while (isTouch) {
+                        try{
+                            System.out.println("444444444444444444");
+                            angle = (float) Math.atan2((positionY-centerY),
+                                    (positionX-centerX));
+                            if(myCoronaMoveListener!=null){
+                                myCoronaMoveListener.onTouched(angle);
+                            }
+                            invalidate();
+                            Thread.sleep(1);
+                        }catch (InterruptedException e){
+                            e.printStackTrace();
+                            break;
                         }
-                        invalidate();
-                        Thread.sleep(1);
-                    }catch (InterruptedException e){
-                        e.printStackTrace();
-                        break;
                     }
+                    isLeft = true;
+                    System.out.println("55555555555555555555");
                 }
-            }
-        };
-        t.start();
+            };
+            t.start();
+        }
         return true;
     }
 

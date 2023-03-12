@@ -10,6 +10,10 @@ import android.view.WindowManager;
 
 import androidx.annotation.NonNull;
 
+import java.util.Calendar;
+import java.util.Timer;
+import java.util.TimerTask;
+
 public class game extends Activity {
     final int CRASH = 0;
     AquaBlue a,b;
@@ -54,10 +58,13 @@ public class game extends Activity {
                     a.radia = angle;
                     a.invalidate();
                     if(getDistance(a.x,a.y,b.x,b.y) <= 70 && !corona2.isTouch && getmessageFlag){
-                        System.out.println("sendmessage1");
-                        mhandler.sendEmptyMessage(CRASH);
                         getmessageFlag = false;
+                        System.out.println("sendmessage1");
+                        Message msg1 = new Message();
+                        msg1.what = CRASH;
+                        mhandler.sendMessage(msg1);
                     }
+                    System.out.println(getDistance(a.x,a.y,b.x,b.y)+"--"+corona2.isTouch+getmessageFlag);
                 }
             }
         });
@@ -76,10 +83,13 @@ public class game extends Activity {
                     b.radia = angle;
                     b.invalidate();
                     if(getDistance(a.x,a.y,b.x,b.y) <= 70 && getmessageFlag){
-                        System.out.println("sendmessage2");
-                        mhandler.sendEmptyMessage(CRASH);
                         getmessageFlag = false;
+                        System.out.println("sendmessage2");
+                        Message msg2 = new Message();
+                        msg2.what = CRASH;
+                        mhandler.sendMessage(msg2);
                     }
+                    System.out.println(getDistance(a.x,a.y,b.x,b.y)+"--"+corona2.isTouch+getmessageFlag);
                 }
             }
         });
