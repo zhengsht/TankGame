@@ -84,18 +84,15 @@ public class Corona extends View implements View.OnTouchListener {
     @Override
     public boolean onTouchEvent(MotionEvent event){
         if(event.getAction() == MotionEvent.ACTION_DOWN){
-            System.out.println("222222222222222222");
             positionX = event.getX();
             positionY = event.getY();
             isTouch = true;
         }
         if(event.getAction() == MotionEvent.ACTION_UP){
-            System.out.println("66666666666666");
             isTouch = false;
             invalidate();
         }
         if(event.getAction() == MotionEvent.ACTION_MOVE){
-            System.out.println("333333333333333333");
             positionX = event.getX();
             positionY = event.getY();
             isTouch = true;
@@ -105,10 +102,8 @@ public class Corona extends View implements View.OnTouchListener {
             t = new Thread() {
                 @Override
                 public void run() {
-                    System.out.println("777777777777");
                     while (isTouch) {
                         try{
-                            System.out.println("444444444444444444");
                             angle = (float) Math.atan2((positionY-centerY),
                                     (positionX-centerX));
                             if(myCoronaMoveListener!=null){
@@ -122,7 +117,6 @@ public class Corona extends View implements View.OnTouchListener {
                         }
                     }
                     isLeft = true;
-                    System.out.println("55555555555555555555");
                 }
             };
             t.start();
