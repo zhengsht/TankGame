@@ -20,6 +20,9 @@ public class game extends Activity {
     final int FLASH = 1;
     final int QUICKEN = 2;
 
+    final int AINVALI = 3;
+    final int BINVALI = 4;
+
     AquaBlue a,b;
     Corona corona1, corona2;
     float mR = (float) 0.8;
@@ -33,16 +36,25 @@ public class game extends Activity {
     static int flashDistance = 200;
     static int quickTime = 500;//ms
 
-    static int flashCD = 5;
+    static int flashCD = 8;
     int CD_flash = flashCD;
     static int quickenCD = 3;
     int CD_quicken = quickenCD;
 
+    Thread coT1;
+    Thread coT2;
+
+    boolean co1Touch;
+    boolean isco1Create = false;
+    boolean co2Touch;
+    boolean isco2Create = false;
+
     Thread mT1;
     Thread mT2;
     Thread mT3;
-    long startTime;
-    long currentTime;
+
+    Message msg1;
+    Message msg2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -67,51 +79,134 @@ public class game extends Activity {
         corona2 = findViewById(R.id.corona2);
         corona1.setOnMyCoronaMoveListener(new Corona.OnMyCoronaMoveListener() {
             @Override
-            public void onTouched(float angle) {
+            public void onTouched(float angle,boolean isTouch) {
                 if(!isGameOver){
                     a = findViewById(R.id.aquaBlue);
                     b = findViewById(R.id.aquaBlue2);
-                    if((a.x + mR2*Math.cos(angle))<a.getWidth() && (a.x + mR2*Math.cos(angle))>0){
-                        a.x = (float) (a.x + mR2*Math.cos(angle));
-                    }
-                    if((a.y + mR2*Math.sin(angle))<a.getHeight() && (a.y + mR2*Math.sin(angle))>0){
-                        a.y = (float) (a.y + mR2*Math.sin(angle));
-                    }
+                    co1Touch = isTouch;
                     a.radia = angle;
-                    a.invalidate();
-                    if(getDistance(a.x,a.y,b.x,b.y) <= 70 && !corona2.isTouch && getmessageFlag){
-                        getmessageFlag = false;
-                        System.out.println("sendmessage1");
-                        Message msg1 = new Message();
-                        msg1.what = CRASH;
-                        mhandler.sendMessage(msg1);
+                    if(isTouch && !isco1Create && getmessageFlag){
+                        coT1 = new Thread() {
+                            @Override
+                            public void run() {
+                                System.out.println("一个新线程1");
+                                isco1Create = true;
+                                while (co1Touch) {
+                                    try{
+                                        a = findViewById(R.id.aquaBlue);
+                                        b = findViewById(R.id.aquaBlue2);
+                                        if((a.x + mR2*Math.cos(a.radia))<a.getWidth() && (a.x + mR2*Math.cos(a.radia))>0){
+                                            a.x = (float) (a.x + mR2*Math.cos(a.radia));
+                                        }
+                                        if((a.y + mR2*Math.sin(a.radia))<a.getHeight() && (a.y + mR2*Math.sin(a.radia))>0){
+                                            a.y = (float) (a.y + mR2*Math.sin(a.radia));
+                                        }
+                                        mhandler.sendEmptyMessage(AINVALI);//a.invalidate();
+                                        Thread.sleep(1);
+                                        if(getDistance(a.x,a.y,b.x,b.y) <= 70 && getmessageFlag && !corona2.isTouch){
+                                            co1Touch = false;
+                                            getmessageFlag = false;
+                                            System.out.println("sendmessage1");
+                                            msg1 = Message.obtain();
+                                            msg1.what = CRASH;
+                                            mhandler.sendMessage(msg1);
+                                        }
+                                    }catch (InterruptedException e){
+                                        e.printStackTrace();
+                                        break;
+                                    }
+                                }
+                                System.out.println("线程1已结束");
+                                isco1Create = false;
+                            }
+                        };
+                        coT1.start();
                     }
-                    System.out.println(getDistance(a.x,a.y,b.x,b.y)+"--"+corona2.isTouch+getmessageFlag);
+//                    a = findViewById(R.id.aquaBlue);
+//                    b = findViewById(R.id.aquaBlue2);
+//                    if((b.x + mR*Math.cos(angle))<b.getWidth() && (b.x + mR*Math.cos(angle))>0){
+//                        b.x = (float) (b.x + mR*Math.cos(angle));
+//                    }
+//                    if((b.y + mR*Math.sin(angle))<b.getHeight() && (b.y + mR*Math.sin(angle))>0){
+//                        b.y = (float) (b.y + mR*Math.sin(angle));
+//                    }
+//                    b.radia = angle;
+//                    b.invalidate();
+//                    if(getDistance(a.x,a.y,b.x,b.y) <= 70 && getmessageFlag){
+//                        getmessageFlag = false;
+//                        System.out.println("sendmessage2");
+//                        msg2 = Message.obtain();
+//                        msg2.what = CRASH;
+//                        mhandler.sendMessage(msg2);
+//                    }
+//                    System.out.println(getDistance(a.x,a.y,b.x,b.y)+"--"+corona2.isTouch+getmessageFlag);
                 }
             }
         });
         corona2.setOnMyCoronaMoveListener(new Corona.OnMyCoronaMoveListener() {
             @Override
-            public void onTouched(float angle) {
+            public void onTouched(float angle,boolean isTouch) {
                 if(!isGameOver){
                     a = findViewById(R.id.aquaBlue);
                     b = findViewById(R.id.aquaBlue2);
-                    if((b.x + mR*Math.cos(angle))<b.getWidth() && (b.x + mR*Math.cos(angle))>0){
-                        b.x = (float) (b.x + mR*Math.cos(angle));
-                    }
-                    if((b.y + mR*Math.sin(angle))<b.getHeight() && (b.y + mR*Math.sin(angle))>0){
-                        b.y = (float) (b.y + mR*Math.sin(angle));
-                    }
+                    co2Touch = isTouch;
                     b.radia = angle;
-                    b.invalidate();
-                    if(getDistance(a.x,a.y,b.x,b.y) <= 70 && getmessageFlag){
-                        getmessageFlag = false;
-                        System.out.println("sendmessage2");
-                        Message msg2 = new Message();
-                        msg2.what = CRASH;
-                        mhandler.sendMessage(msg2);
+                    if(isTouch && !isco2Create && getmessageFlag){
+                        coT2 = new Thread() {
+                            @Override
+                            public void run() {
+                                System.out.println("一个新线程");
+                                isco2Create = true;
+                                while (co2Touch) {
+                                    try{
+                                        a = findViewById(R.id.aquaBlue);
+                                        b = findViewById(R.id.aquaBlue2);
+                                        if((b.x + mR2*Math.cos(b.radia))<b.getWidth() && (b.x + mR2*Math.cos(b.radia))>0){
+                                            b.x = (float) (b.x + mR2*Math.cos(b.radia));
+                                        }
+                                        if((b.y + mR2*Math.sin(b.radia))<b.getHeight() && (b.y + mR2*Math.sin(b.radia))>0){
+                                            b.y = (float) (b.y + mR2*Math.sin(b.radia));
+                                        }
+                                        b.invalidate();//mhandler.sendEmptyMessage(BINVALI);//
+                                        Thread.sleep(1);
+                                        if(getDistance(a.x,a.y,b.x,b.y) <= 70 && getmessageFlag){
+                                            co1Touch = false;
+                                            co2Touch = false;
+                                            getmessageFlag = false;
+                                            System.out.println("sendmessage2");
+                                            msg2 = Message.obtain();
+                                            msg2.what = CRASH;
+                                            mhandler.sendMessage(msg2);
+                                        }
+                                    }catch (InterruptedException e){
+                                        e.printStackTrace();
+                                        break;
+                                    }
+                                }
+                                System.out.println("线程2已结束");
+                                isco2Create = false;
+                            }
+                        };
+                        coT2.start();
                     }
-                    System.out.println(getDistance(a.x,a.y,b.x,b.y)+"--"+corona2.isTouch+getmessageFlag);
+//                    a = findViewById(R.id.aquaBlue);
+//                    b = findViewById(R.id.aquaBlue2);
+//                    if((b.x + mR*Math.cos(angle))<b.getWidth() && (b.x + mR*Math.cos(angle))>0){
+//                        b.x = (float) (b.x + mR*Math.cos(angle));
+//                    }
+//                    if((b.y + mR*Math.sin(angle))<b.getHeight() && (b.y + mR*Math.sin(angle))>0){
+//                        b.y = (float) (b.y + mR*Math.sin(angle));
+//                    }
+//                    b.radia = angle;
+//                    b.invalidate();
+//                    if(getDistance(a.x,a.y,b.x,b.y) <= 70 && getmessageFlag){
+//                        getmessageFlag = false;
+//                        System.out.println("sendmessage2");
+//                        msg2 = Message.obtain();
+//                        msg2.what = CRASH;
+//                        mhandler.sendMessage(msg2);
+//                    }
+//                    System.out.println(getDistance(a.x,a.y,b.x,b.y)+"--"+corona2.isTouch+getmessageFlag);
                 }
             }
         });
@@ -144,16 +239,17 @@ public class game extends Activity {
         public boolean handleMessage(@NonNull Message message) {
             switch (message.what){
                 case CRASH:
+                    isGameOver = true;
                     System.out.println("getmessage");
                     try{
                         corona1 = findViewById(R.id.corona1);
                         corona2 = findViewById(R.id.corona2);
-                        corona1.t.interrupt();
-                        corona2.t.interrupt();
+                        corona1.isOver = true;
+                        corona2.isOver = true;
                     }catch (NullPointerException e){
                         e.printStackTrace();
                     }
-                    isGameOver = true;
+                    System.out.println("观察");
                     setContentView(R.layout.gameover);
                     getmessageFlag = true;
                     break;
@@ -181,6 +277,16 @@ public class game extends Activity {
                     }catch (NullPointerException e){
                         e.printStackTrace();
                     }
+                    break;
+
+                case AINVALI:
+                    a = findViewById(R.id.aquaBlue);
+                    a.invalidate();
+                    break;
+
+                case BINVALI:
+                    b = findViewById(R.id.aquaBlue2);
+                    b.invalidate();
                     break;
             }
             return false;

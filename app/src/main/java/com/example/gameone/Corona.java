@@ -11,6 +11,7 @@ import android.view.View;
 public class Corona extends View implements View.OnTouchListener {
     private Paint mPaint;
     public boolean isTouch = false;
+    public boolean isOver = false;
 
     public boolean isLeft = true;
     public float angle = 0;
@@ -19,7 +20,6 @@ public class Corona extends View implements View.OnTouchListener {
     float positionX;
     float positionY;
     OnMyCoronaMoveListener myCoronaMoveListener;
-    Thread t;
 
     public Corona(Context context){
         super(context);
@@ -83,6 +83,7 @@ public class Corona extends View implements View.OnTouchListener {
 
     @Override
     public boolean onTouchEvent(MotionEvent event){
+        isLeft = false;
         if(event.getAction() == MotionEvent.ACTION_DOWN){
             positionX = event.getX();
             positionY = event.getY();
@@ -90,6 +91,7 @@ public class Corona extends View implements View.OnTouchListener {
         }
         if(event.getAction() == MotionEvent.ACTION_UP){
             isTouch = false;
+            isLeft = true;
             invalidate();
         }
         if(event.getAction() == MotionEvent.ACTION_MOVE){
@@ -97,30 +99,12 @@ public class Corona extends View implements View.OnTouchListener {
             positionY = event.getY();
             isTouch = true;
         }
-        if(isLeft){
-            isLeft = false;
-            t = new Thread() {
-                @Override
-                public void run() {
-                    while (isTouch) {
-                        try{
-                            angle = (float) Math.atan2((positionY-centerY),
-                                    (positionX-centerX));
-                            if(myCoronaMoveListener!=null){
-                                myCoronaMoveListener.onTouched(angle);
-                            }
-                            invalidate();
-                            Thread.sleep(1);
-                        }catch (InterruptedException e){
-                            e.printStackTrace();
-                            break;
-                        }
-                    }
-                    isLeft = true;
-                }
-            };
-            t.start();
+        angle = (float) Math.atan2((positionY-centerY),
+                (positionX-centerX));
+        if(myCoronaMoveListener!=null){
+            myCoronaMoveListener.onTouched(angle,isTouch);
         }
+        invalidate();
         return true;
     }
 
@@ -133,6 +117,6 @@ public class Corona extends View implements View.OnTouchListener {
     }
 
     public static abstract interface OnMyCoronaMoveListener {
-        public abstract void onTouched(float angle);
+        public abstract void onTouched(float angle,boolean isTouch);
     }
 }
